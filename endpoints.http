@@ -6,11 +6,8 @@ GET {{baseUrl}}/api/v1/health
 ### List All Todos
 GET {{baseUrl}}/api/v1/todos
 
-### Get all completed todos
- GET {{baseUrl}}/api/v1/todos?completed=true
- 
 ### Get a specific Todo
-GET {{baseUrl}}/api/v1/todos/4
+GET {{baseUrl}}/api/v1/todos/1
 
 ### Create a Todo
 POST {{baseUrl}}/api/v1/todos
@@ -23,7 +20,7 @@ Content-Type: application/json
 }
 
 ### Update a Todo
-PUT {{baseUrl}}/api/v1/todos/2
+PUT {{baseUrl}}/api/v1/todos/1
 Content-Type: application/json
 
 {
@@ -31,4 +28,4 @@ Content-Type: application/json
 }
 
 ### Delete a Todo
-DELETE {{baseUrl}}/api/v1/todos/8
+DELETE {{baseUrl}}/api/v1/todos/1
