@@ -1,30 +1,23 @@
 from flask import Blueprint, jsonify,request
 from todo.models import db
 from todo.models.todo import Todo
-from datetime import datetime
+from datetime import datetime,timedelta
  
 api = Blueprint('api', __name__, url_prefix='/api/v1') 
-
-TEST_ITEM = {
-    "id": 1,
-    "title": "Watch CSSE6400 Lecture",
-    "description": "Watch the CSSE6400 lecture on ECHO360 for week 1",
-    "completed": True,
-    "deadline_at": "2023-02-27T00:00:00",
-    "created_at": "2023-02-20T00:00:00",
-    "updated_at": "2023-02-20T00:00:00"
-}
- 
-@api.route('/health') 
-def health():
-    """Return a status of 'ok' if the server is running and listening to request"""
-    return jsonify({"status": "ok"})
 
 
 @api.route('/todos', methods=['GET'])
 def get_todos():
     todos = Todo.query.all()
     result = []
+    window = request.args.get('window', None)
+    completed = request.args.get('completed', None)
+    if completed is not None:
+         completed = bool(completed)
+         todos = Todo.query.filter_by(completed=completed)
+    if window is not None:
+         window = int(window)
+         todos = Todo.query.filter(Todo.deadline_at <= (datetime.now() + timedelta(days=int(window))))
     for todo in todos:
        result.append(todo.to_dict())
     return jsonify(result)
@@ -45,6 +38,10 @@ def create_todo():
     )
     if 'deadline_at' in request.json:
        todo.deadline_at = datetime.fromisoformat(request.json.get('deadline_at'))
+    if 'title' not in request.json:
+         return jsonify({"error": "Title is required"}), 400
+    if 'extra' in request.json:
+         return jsonify({"error": "Extra is not allowed"}), 400
     # Adds a new record to the database or will update an existing record
     db.session.add(todo)
     # Commits the changes to the database, this must be called for the changes to be saved
